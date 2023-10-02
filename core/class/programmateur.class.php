@@ -76,6 +76,13 @@ class programmateur extends eqLogic {
 				$eqLogic->setConfiguration('RepeatCount',$eqLogic->getConfiguration('RepeatCount')+1)->save();// Mise du compteur à +1
 				if ($eqLogic->getConfiguration('NoRepeat') == 1 && $eqLogic->getConfiguration('RepeatCount') > 0) {
 					$cmd_state->event(0);
+					$eqLogic->checkAndUpdateCmd('lundi','0');
+					$eqLogic->checkAndUpdateCmd('mardi','0');
+					$eqLogic->checkAndUpdateCmd('mercredi','0');
+					$eqLogic->checkAndUpdateCmd('jeudi','0');
+					$eqLogic->checkAndUpdateCmd('vendredi','0');
+					$eqLogic->checkAndUpdateCmd('samedi','0');
+					$eqLogic->checkAndUpdateCmd('dimanche','0');
 				}
 			}
 		}
@@ -161,7 +168,7 @@ class programmateur extends eqLogic {
 						$duree = - $duree;
 					}
 
-					$array = array('eq_id' => intval($programmateur->getId()),'delay' => $duree*60,'typeaction1' => $programmateur->getConfiguration('TypeAction1'),'action1' => $programmateur->getConfiguration('Action1'),'typeaction2' => $programmateur->getConfiguration('TypeAction2'),'action2' => $programmateur->getConfiguration('Action2'),'timestamp' => $heure_timestamp, 'tagaction1' => $programmateur->getConfiguration('TagAction1'), 'tagaction2' => $programmateur->getConfiguration('TagAction2'));
+					$array = array('eq_id' => intval($programmateur->getId()),'delay' => abs($duree) * 60,'typeaction1' => $programmateur->getConfiguration('TypeAction1'),'action1' => $programmateur->getConfiguration('Action1'),'typeaction2' => $programmateur->getConfiguration('TypeAction2'),'action2' => $programmateur->getConfiguration('Action2'),'timestamp' => intval($heure_timestamp), 'tagaction1' => $programmateur->getConfiguration('TagAction1'), 'tagaction2' => $programmateur->getConfiguration('TagAction2'));
 					// Si on doit programmer un cron
 					if (($heure_timestamp > strtotime(date('H:i'))) && (($JF_box == 1 && $JF == 0) || $JF_box == 0) && (($Mode_box == 1 && $Mode == 0) || $Mode_box == 0) && (($today == 1 && $lundi == 1)||($today == 2 && $mardi == 1)||($today == 3 && $mercredi == 1)||($today == 4 && $jeudi == 1)||($today == 5 && $vendredi == 1)||($today == 6 && $samedi == 1)||($today == 7 && $dimanche == 1))) {
 						log::add('programmateur','debug','  - Nouveau cron à '.date('H:i',$array['timestamp']));
@@ -177,6 +184,14 @@ class programmateur extends eqLogic {
 					}
 				} else {
 					log::add('programmateur','debug','  Action de fin sur mise sur off de l\'équipement');
+					$programmateur->checkAndUpdateCmd('lundi','0');
+					$programmateur->checkAndUpdateCmd('mardi','0');
+					$programmateur->checkAndUpdateCmd('mercredi','0');
+					$programmateur->checkAndUpdateCmd('jeudi','0');
+					$programmateur->checkAndUpdateCmd('vendredi','0');
+					$programmateur->checkAndUpdateCmd('samedi','0');
+					$programmateur->checkAndUpdateCmd('dimanche','0');
+
 					$EndOnOff = $programmateur->getConfiguration('EndOnOff');
 					log::add('programmateur','debug','  - EndOnOff : ' . $EndOnOff);
 					if ($EndOnOff == 1){
